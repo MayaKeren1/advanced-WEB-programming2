@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import React,{ useContext } from 'react';
 import { Store } from '../Store';
 import { Helmet } from 'react-helmet-async';
 import Row from 'react-bootstrap/Row';
@@ -11,7 +11,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 export default function CartScreen() {
-  const navigate = useNavigate();
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const {
     cart: { cartItems },
@@ -32,8 +31,36 @@ export default function CartScreen() {
     ctxDispatch({ type: 'CART_REMOVE_ITEM', payload: item });
   };
 
-  const checkoutHandler = () => {
-    navigate('/signin?redirect=/shipping');
+  const checkoutHandler = async () => {
+    var oneItem;
+    var name;
+    var p;
+    var q;
+    var email = document.getElementById('email').value;
+    var username = document.getElementById('username').value;
+    if (email != "" && username !== "") {
+      document.getElementById('username');
+      cartItems.map(async (item) => (
+        //name = item.name,
+        name = item.name,
+        p = item.price,
+        q = item.quantity,
+        oneItem = { name: username, email: email, brand: name, quantity: q, price: p },
+        await axios.post("http://localhost:5000/", oneItem)
+      ));
+      window.alert('Thank you!');
+      cartItems.map((item) => (
+        removeItemHandler(item)
+      ));
+      document.getElementById('email').value = "";
+      document.getElementById('username').value = "";
+    }
+    else {
+      window.alert('You must fill both Name and Email fileds Please Try Again!');
+    }
+
+
+
   };
 
   return (
@@ -110,6 +137,11 @@ export default function CartScreen() {
                 </ListGroup.Item>
                 <ListGroup.Item>
                   <div className="d-grid">
+                    <div>User Name:</div>
+                    <input id='username'></input>
+                    <div>Email:</div>
+                    <input id='email'></input>
+                    <br></br>
                     <Button
                       type="button"
                       variant="primary"
